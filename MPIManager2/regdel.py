@@ -14,7 +14,7 @@ value = r"SCRNSAVE.EXE"
 
 try:
     # key = 열린 키 or 사전 정의된 HKEY_* 상수
-    # value = 제거할 값을 식별하는 문자열 
+    # value = 제거할 값을 식별하는 문자열
     DeleteValue(key, value)
     print("삭제했음")
 

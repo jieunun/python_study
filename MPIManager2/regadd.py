@@ -30,7 +30,7 @@ screensaver_path = r"Control Panel\Desktop"
 reg_handle = ConnectRegistry(None,HKEY_CURRENT_USER)
 
  # 읽어오기만 할 경우엔 access=KEY_READ 사용
- # 0은 reserved인데 딱히 건들 일 없을 듯..
+ # 0은 reserved인데 딱히 건들 일 없을 듯..?
 key = OpenKey(reg_handle,screensaver_path,0,access=KEY_WRITE)
 
 

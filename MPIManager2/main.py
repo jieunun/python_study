@@ -1,29 +1,30 @@
+#1. 화면보호기 사용 여부
+#2. 화면보호기 대기시간
+#3. 화면보호기 해제 시 암호 사용 여부
+
+from tkinter import *
 import tkinter as tk
 from winreg import *
 
 #루트화면 (root window) 생성
-scrsvr = tk() 
+window = Tk()
+#화면 크기 및 위치(너비x높이+x좌표+y좌표)
+window.geometry('400x200+800+100') 
 
 #타이틀 표시
-scrsvr.title('MPI Screen Saver')
+window.title('MPI Screen Saver')
 
-#텍스트 표시
-label = tk.Label(scrsvr, text='화면보호기 점검 항목') 
+path = r"Control Panel\Desktop"
+exe = r"SCRNSAVE.EXE"
 
-#레이블 배치 실행
-label.pack()
-
-screensaver_path = r"Control Panel\Desktop"
-scrnsave = r"SCRNSAVE.EXE"
-
-def scrnsave_add():
+def isUse_add():
     #레지스트리 연결 및 키 열기
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
-    key = OpenKey(reg_handle, screensaver_path, 0, access=KEY_WRITE)
+    key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
 
     #레지스트리 키 값 등록
     try:
-        SetValueEx(key, scrnsave, 0, REG_SZ, r"C:\Windows\system32\scrnsave.scr")
+        SetValueEx(key, exe, 0, REG_SZ, r"C:\Windows\system32\scrnsave.scr")
         print("created")
 
     except EnvironmentError:
@@ -32,13 +33,13 @@ def scrnsave_add():
     #키 닫기
     CloseKey(key)
 
-def scrnsave_del():
+def isUse_del():
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
-    key = OpenKey(reg_handle, screensaver_path, 0, access=KEY_WRITE)
+    key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
     
     #레지스트리 키 삭제
     try:
-        DeleteValue(key, scrnsave)
+        DeleteValue(key, exe)
         print("deleted")
 
     except EnvironmentError:
@@ -46,9 +47,9 @@ def scrnsave_del():
 
     CloseKey(key)
 
-def ScreenSaveTimeOut_alt():
+def timeout_alt():
     reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
-    key = OpenKey(reg_handle, screensaver_path, 0, access=KEY_WRITE)
+    key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
 
     try:
         SetValueEx(key, r"ScreenSaveTimeOut", 0, REG_SZ, ScreenSaveTimeOut.get())
@@ -59,19 +60,59 @@ def ScreenSaveTimeOut_alt():
 
     CloseKey(key)
 
+def isSecure_t():
+    reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
+    key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
+
+    try:
+        SetValueEx(key, r"ScreenSaverIsSecure", 0, REG_SZ, "1")
+        print("safe")
+
+    except EnvironmentError:
+        print("Encountered problems changing into the Registry")
+
+    CloseKey(key)
+
+def isSecure_f():
+    reg_handle = ConnectRegistry(None, HKEY_CURRENT_USER)
+    key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
+
+    try:
+        SetValueEx(key, r"ScreenSaverIsSecure", 0, REG_SZ, "0")
+        print("unsafe")
+
+    except EnvironmentError:
+        print("Encountered problems changing into the Registry")
+
+    CloseKey(key)
+
 if __name__=="__main__":
-    button_create = Button(scrsvr, text='레지스트리 추가', command=scrnsave_add)
-    button_create.pack(padx=10, pady=10) #side로 배치설정, padx로 좌우 여백설정, pady로 상하 여백설정 
+    label1 = Label(window, text='1. 화면보호기 사용 여부') 
+    label1.grid(row=0, column=0)
 
-    button_delete = Button(scrsvr, text='레지스트리 삭제', command=scrnsave_del)
-    button_delete.pack(padx=10, pady=10)
+    btn1_1 = Button(window, text='사용', command=isUse_add, width=10)
+    btn1_1.grid(row=0, column=1)
+    
+    btn1_2 = Button(window, text='미사용', command=isUse_del, width=10)
+    btn1_2.grid(row=0, column=2)
 
-    ScreenSaveTimeOut = tk.Entry(fg='gray19', bg='snow', width=20)
-    ScreenSaveTimeOut.pack(padx=10, pady=10)
+    label2 = Label(window, text='2. 화면보호기 대기시간') 
+    label2.grid(row=1, column=0)
 
-    button_alter = Button(scrsvr, text='대기 시간 변경', command=ScreenSaveTimeOut_alt)
-    button_alter.pack(padx=10, pady=10)
+    entry = tk.Entry(fg='gray19', bg='snow', width=20)
+    entry.grid(row=1, column=1)
 
+    btn2 = Button(window, text='변경', command=timeout_alt, width=10)
+    btn2.grid(row=1, column=2)
+
+    label3 = Label(window, text='3. 화면보호기 암호 여부') 
+    label3.grid(row=2, column=0)
+
+    btn3_1 = Button(window, text='사용', command=isSecure_t, width=10)
+    btn3_1.grid(row=2, column=1)
+
+    btn3_2 = Button(window, text='미사용', command=isSecure_f, width=10)
+    btn3_2.grid(row=2, column=2)
 
 #메인루프 실행
-scrsvr.mainloop()
+window.mainloop()
