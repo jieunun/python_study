@@ -52,7 +52,7 @@ def timeout_alt():
     key = OpenKey(reg_handle, path, 0, access=KEY_WRITE)
 
     try:
-        SetValueEx(key, r"ScreenSaveTimeOut", 0, REG_SZ, ScreenSaveTimeOut.get())
+        SetValueEx(key, r"ScreenSaveTimeOut", 0, REG_SZ, entry.get())
         print("alternated")
 
     except EnvironmentError:
